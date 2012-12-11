@@ -60,7 +60,7 @@ sample = Graph
    WEdge 4 (WVVertex C False Nothing) (WVVertex D False Nothing),
    WEdge 1 (WVVertex D False Nothing) (WVVertex E False Nothing)]
    
-conns :: (Eq a) => (Edge a -> Vertex a) -> (Vertex a) -> Graph a -> [Edge a]
+conns :: (Eq a) => (Edge a -> Vertex a) -> Vertex a -> Graph a -> [Edge a]
 conns f x (Graph _ es) = filter ((==x) . f) es
 
 outEdges x = conns from x
@@ -80,11 +80,16 @@ findEdgesContaining :: (Eq a) => Vertex a -> Graph a -> [Edge a]
 findEdgesContaining v g@(Graph _ es) = filter (edgeContains v) es
   where edgeContains v e' = from e' == v || to e' == v  
 
---Will not modify edge pointers yet :(
+mapVertices :: (Vertex a -> Vertex a) -> Edge a -> Edge a
+mapVertices f (Edge a b) = Edge (f a) (f b)
+mapVertices f (WEdge w a b) = WEdge w (f a) (f b)
+  
+-- ex : modifyVertex (fmap succ) (head $ vertices sample) sample
 modifyVertex :: (Eq a) => (Vertex a -> Vertex a) -> Vertex a -> Graph a -> Graph a
-modifyVertex f v g@(Graph vs es) = Graph vs' es
+modifyVertex f v g@(Graph vs es) = Graph vs' es'
   where vs' = f v : filter (/= v) vs
-        edges = findEdgesContaining v g
+        cEdges = findEdgesContaining v g
+        es' = map (mapVertices f) cEdges ++  filter (`notElem` cEdges) es
 		
 modifyEdgeWeight :: (Eq a) => (Int -> Int) -> Edge a -> Graph a -> Graph a
 modifyEdgeWeight f e@(WEdge w a b) (Graph vs es) = Graph vs (WEdge (f w) a b : filter (/= e) es)
