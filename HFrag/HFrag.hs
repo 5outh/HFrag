@@ -10,7 +10,7 @@ module HFrag(
   findVertex,
   findEdge,
   modifyVertex,
-  modifyEdge
+  modifyEdgeWeight
 )where
 
 import Data.Ord(compare)
@@ -78,14 +78,13 @@ findEdge a b (Graph _ es) = head $ filter (\x -> from x == a && to x == b) es
 
 findEdgesContaining :: (Eq a) => Vertex a -> Graph a -> [Edge a]
 findEdgesContaining v g@(Graph _ es) = filter (edgeContains v) es
-  where edgeContains v e' = from e' == v || to e' == v 
-  
+  where edgeContains v e' = from e' == v || to e' == v  
+
 --Will not modify edge pointers yet :(
 modifyVertex :: (Eq a) => (Vertex a -> Vertex a) -> Vertex a -> Graph a -> Graph a
 modifyVertex f v g@(Graph vs es) = Graph vs' es
   where vs' = f v : filter (/= v) vs
-  
---This also won't modify edge pointers yet :(
-modifyEdge :: (Eq a) => (Edge a -> Edge a) -> Edge a -> Graph a -> Graph a
-modifyEdge f edge g@(Graph vs es) = Graph vs es'
-  where es' = f edge : filter (/= edge) es
+        edges = findEdgesContaining v g
+		
+modifyEdgeWeight :: (Eq a) => (Int -> Int) -> Edge a -> Graph a -> Graph a
+modifyEdgeWeight f e@(WEdge w a b) (Graph vs es) = Graph vs (WEdge (f w) a b : filter (/= e) es)
