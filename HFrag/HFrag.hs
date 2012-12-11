@@ -1,30 +1,30 @@
 module HFrag(
   Edge(Edge,WEdge),
-  Node(Node,VNode,WNode,WVNode),
+  Vertex(Vertex,VVertex,WVertex,WVVertex),
   Graph(Graph),
   Letter,
   (>+>),
   outEdges,
   inEdges,
   plus,
-  findNode,
+  findVertex,
   findEdge,
-  modifyNode,
+  modifyVertex,
   modifyEdge
 )where
 
 import Data.Ord(compare)
 import Data.Function(on)
 
-data Edge a = Edge  { from :: Node a, to :: Node a } --how to get rid of error from calling weight?
-            | WEdge { eWeight :: Int, from :: Node a, to:: Node a } deriving (Show, Eq)
+data Edge a = Edge  { from :: Vertex a, to :: Vertex a } --how to get rid of error from calling weight?
+            | WEdge { eWeight :: Int, from :: Vertex a, to:: Vertex a } deriving (Show, Eq)
 
-data Node a = Node   { name :: a }| 
-              VNode  { name :: a, visited :: Bool } | --Visitable
-              WNode  { name :: a, nWeight :: Maybe Int } |  --Weighted
-              WVNode { name :: a, visited :: Bool, nWeight :: Maybe Int} deriving (Show, Eq) --Weighted/Visitable
+data Vertex a = Vertex   { name :: a }| 
+              VVertex  { name :: a, visited :: Bool } | --Visitable
+              WVertex  { name :: a, nWeight :: Maybe Int } |  --Weighted
+              WVVertex { name :: a, visited :: Bool, nWeight :: Maybe Int} deriving (Show, Eq) --Weighted/Visitable
 			  
-data Graph a = Graph{ vertices :: [Node a], edges :: [Edge a] } deriving (Show, Eq)
+data Graph a = Graph{ vertices :: [Vertex a], edges :: [Edge a] } deriving (Show, Eq)
 
 data Letter = A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P deriving (Show, Eq, Enum)
 
@@ -35,53 +35,57 @@ Just a  >+> Nothing = Just a
 Nothing >+> Just a  = Just a
 Nothing >+> Nothing = Nothing
 
-instance Functor Node where
-  fmap f (Node a) = Node (f a)
-  fmap f (VNode a v) = VNode (f a) v
-  fmap f (WNode a w) = WNode (f a) w
-  fmap f (WVNode a v w) = WVNode (f a) v w
+instance Functor Vertex where
+  fmap f (Vertex a) = Vertex (f a)
+  fmap f (VVertex a v) = VVertex (f a) v
+  fmap f (WVertex a w) = WVertex (f a) w
+  fmap f (WVVertex a v w) = WVVertex (f a) v w
 
 instance Functor Edge where
   fmap f (Edge a b) = Edge (fmap f a) (fmap f b)
   fmap f (WEdge w a b) = WEdge w (fmap f a) (fmap f b)
   
---instance Functor Graph where
-  --fmap f (Graph v e) = Graph (fmap (fmap f) v) (fmap (fmap f) e)
+instance Functor Graph where
+  fmap f (Graph vs es) = Graph (map (fmap f) vs) (map (fmap f) es)
   
 sample = Graph 
-  [WVNode A False (Just 0), WVNode B False Nothing,
-   WVNode C False Nothing, WVNode D False Nothing,
-   WVNode E False Nothing]
-  [WEdge 2 (WVNode A False (Just 0)) (WVNode B False Nothing), 
-   WEdge 4 (WVNode A False (Just 0)) (WVNode C False Nothing), 
-   WEdge 6 (WVNode B False Nothing) (WVNode C False Nothing),
-   WEdge 8 (WVNode B False Nothing) (WVNode E False Nothing),
-   WEdge 9 (WVNode E False Nothing) (WVNode C False Nothing), 
-   WEdge 4 (WVNode C False Nothing) (WVNode D False Nothing),
-   WEdge 1 (WVNode D False Nothing) (WVNode E False Nothing)]
+  [WVVertex A False (Just 0), WVVertex B False Nothing,
+   WVVertex C False Nothing, WVVertex D False Nothing,
+   WVVertex E False Nothing]
+  [WEdge 2 (WVVertex A False (Just 0)) (WVVertex B False Nothing), 
+   WEdge 4 (WVVertex A False (Just 0)) (WVVertex C False Nothing), 
+   WEdge 6 (WVVertex B False Nothing) (WVVertex C False Nothing),
+   WEdge 8 (WVVertex B False Nothing) (WVVertex E False Nothing),
+   WEdge 9 (WVVertex E False Nothing) (WVVertex C False Nothing), 
+   WEdge 4 (WVVertex C False Nothing) (WVVertex D False Nothing),
+   WEdge 1 (WVVertex D False Nothing) (WVVertex E False Nothing)]
    
-conns :: (Eq a) => (Edge a -> Node a) -> (Node a) -> Graph a -> [Edge a]
-conns f x (Graph _ e) = filter ((==x) . f) e
+conns :: (Eq a) => (Edge a -> Vertex a) -> (Vertex a) -> Graph a -> [Edge a]
+conns f x (Graph _ es) = filter ((==x) . f) es
 
 outEdges x = conns from x
 
 inEdges x = conns to x
 
-plus x (WNode a w) = WNode a (w >+> Just x)
-plus x (WVNode a b w) = WVNode a b (w >+> Just x)
+plus x (WVertex a w) = WVertex a (w >+> Just x)
+plus x (WVVertex a b w) = WVVertex a b (w >+> Just x)
 
-findNode :: (Eq a) => a -> Graph a -> Node a
-findNode a (Graph v e) = head $ filter ((==a) . name) v
+findVertex :: (Eq a) => a -> Graph a -> Vertex a
+findVertex a (Graph vs es) = head $ filter ((==a) . name) vs
 
-findEdge :: (Eq a) => Node a -> Node a -> Graph a -> Edge a
-findEdge a b (Graph v e) = head $ filter (\x -> from x == a && to x == b) e
+findEdge :: (Eq a) => Vertex a -> Vertex a -> Graph a -> Edge a
+findEdge a b (Graph _ es) = head $ filter (\x -> from x == a && to x == b) es
 
---Will not modify edge pointers :(
-modifyNode :: (Eq a) => (Node a -> Node a) -> Node a -> Graph a -> Graph a
-modifyNode f node g@(Graph v e) = Graph v' e
-  where v' = f node : filter (/= node) v
+findEdgesContaining :: (Eq a) => Vertex a -> Graph a -> [Edge a]
+findEdgesContaining v g@(Graph _ es) = filter (edgeContains v) es
+  where edgeContains v e' = from e' == v || to e' == v 
   
---This also won't modify edge pointers :(
+--Will not modify edge pointers yet :(
+modifyVertex :: (Eq a) => (Vertex a -> Vertex a) -> Vertex a -> Graph a -> Graph a
+modifyVertex f v g@(Graph vs es) = Graph vs' es
+  where vs' = f v : filter (/= v) vs
+  
+--This also won't modify edge pointers yet :(
 modifyEdge :: (Eq a) => (Edge a -> Edge a) -> Edge a -> Graph a -> Graph a
-modifyEdge f edge g@(Graph v e) = Graph v e'
-  where e' = f edge : filter (/= edge) e
+modifyEdge f edge g@(Graph vs es) = Graph vs es'
+  where es' = f edge : filter (/= edge) es
