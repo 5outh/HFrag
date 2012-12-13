@@ -4,7 +4,12 @@ module HFrag(
   findVertex,
   findEdge,
   modifyVertex,
-  modifyEdgeWeight
+  modifyEdgeWeight,
+  findEdgesContaining,
+  edgeContains,
+  removeEdge,
+  removeVertex,
+  sample
 )where
 
 -- for pathfinding
@@ -21,6 +26,7 @@ sample = Graph
    WEdge (WVNode B False Inf) (WVNode C False Inf) 3]
 
 sampleEdge = WEdge (WVNode A False (Number 0)) (WVNode B False Inf) 2
+
 sampleVertex = WVNode A False (Number 0)
 
 outEdges :: (Vertex v, Eq a) => a -> Graph (v a) -> [Edge (v a)]
@@ -38,9 +44,20 @@ findVertex a (Graph vs es) = head $ filter ((==a) . info) vs
 findEdge :: (Vertex v, Eq a) => a -> a -> Graph (v a) -> Edge (v a)
 findEdge a b (Graph _ es) = head $ filter (\x -> (info $ from x) == a && (info $ to x) == b) es
 
+removeEdge :: (Eq a) => Edge a -> Graph a -> Graph a
+removeEdge x g@(Graph vs es) = Graph vs es'
+  where es' = filter (/=x) es
+  
 findEdgesContaining :: (Eq a) => a -> Graph a -> [Edge a]
 findEdgesContaining v g@(Graph _ es) = filter (edgeContains v) es
-  where edgeContains v e' = from e' == v || to e' == v  
+
+edgeContains :: (Eq a) => a -> Edge a -> Bool
+edgeContains v e' = from e' == v || to e' == v  
+
+removeVertex :: (Eq a) => a -> Graph a -> Graph a
+removeVertex v g@(Graph vs es) = Graph vs' es'
+  where vs' = filter (/=v) vs
+        es' = filter (`notElem` (findEdgesContaining v g)) es 
 
 -- ex : modifyVertex (fmap succ) (head $ vertices sample) sample
 modifyVertex :: (Eq a) => (a -> a) -> a -> Graph a -> Graph a
