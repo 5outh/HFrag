@@ -13,7 +13,10 @@ import Data.Function(on)
 import HFrag.Types
 import HFrag.Instances
 
-sample = Graph 
+--sample :: Graph Letter WVNode (Weighted, Visitable Node, graph of Letters)
+--sample = Graph [A,B,C] ...
+
+sample = Graph
   [WVNode A False (Number 0), WVNode B False Inf,
    WVNode C False Inf]
   [WEdge (WVNode A False (Number 0)) (WVNode B False Inf) 2,
@@ -33,7 +36,6 @@ inEdges x = conns to x
 adjacent :: (Eq a) => a -> a -> Graph a -> Bool
 adjacent a b g = not $ null $ filter (\x -> from x == a && to x == b) $ edges g
 
---needs to be fixed
 findVertex :: (Vertex v, Eq a) => a -> Graph (v a) -> v a
 findVertex a (Graph vs es) = head $ filter ((==a) . info) vs
 
