@@ -30,8 +30,12 @@ outEdges x = conns from x
 
 inEdges x = conns to x
 
-findVertex :: (Eq a) => a -> Graph a -> a
-findVertex a (Graph vs es) = head $ filter (==a) vs
+adjacent :: (Eq a) => a -> a -> Graph a -> Bool
+adjacent a b g = not $ null $ filter (\x -> from x == a && to x == b) $ edges g
+
+--needs to be fixed
+findVertex :: (Vertex v, Eq a) => a -> Graph (v a) -> v a
+findVertex a (Graph vs es) = head $ filter ((==a) . info) vs
 
 findEdge :: (Eq a) => a -> a -> Graph a -> Edge a
 findEdge a b (Graph _ es) = head $ filter (\x -> from x == a && to x == b) es
