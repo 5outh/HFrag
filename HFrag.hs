@@ -31,6 +31,7 @@ sample = Graph
    WEdge (WVNode A False (Number 0)) (WVNode C False Inf) 4,
    WEdge (WVNode B False Inf) (WVNode C False Inf) 3]
 
+--unfortunately this doesn't make items point to the same thing :(
 sample2 = Graph 
  [WVNode A False (Number 0), WVNode B False Inf]
  [WEdge (head $ vertices sample2) (last $ vertices sample2) 2]
