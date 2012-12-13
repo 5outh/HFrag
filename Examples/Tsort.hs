@@ -5,10 +5,11 @@ import HFrag.Algorithms(tsort)
 
 people = Graph
   (map Node ["Ron","April","Ann","Leslie","Andy","Jerry"])
-  [Edge (Node "Ron") (Node "April"), Edge (Node "Ron") (Node "Andy"), Edge (Node "Ron") (Node "Ann"),
-   Edge (Node "April") (Node "Ann"), Edge (Node "April") (Node "Andy"), Edge (Node "Leslie") (Node "April"),
-   Edge (Node "Leslie") (Node "Ron"), Edge (Node "Leslie") (Node "Andy"), Edge (Node "Ann") (Node "Andy"),
-   Edge (Node "Ann") (Node "Jerry"), Edge (Node "Andy") (Node "Jerry")]
+  (map (fmap Node) 
+  [Edge "Ron" "April", Edge "Ron" "Andy", Edge "Ron" "Ann",
+   Edge "April" "Ann", Edge "April" "Andy", Edge "Leslie" "April",
+   Edge "Leslie" "Ron", Edge "Leslie" "Andy", Edge "Ann" "Andy",
+   Edge "Ann" "Jerry", Edge "Andy" "Jerry"])
 
 {-
 Produces:
