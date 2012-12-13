@@ -37,8 +37,8 @@ adjacent a b g = not $ null $ filter (\x -> from x == a && to x == b) $ edges g
 findVertex :: (Vertex v, Eq a) => a -> Graph (v a) -> v a
 findVertex a (Graph vs es) = head $ filter ((==a) . info) vs
 
-findEdge :: (Eq a) => a -> a -> Graph a -> Edge a
-findEdge a b (Graph _ es) = head $ filter (\x -> from x == a && to x == b) es
+findEdge :: (Vertex v, Eq a) => a -> a -> Graph (v a) -> Edge (v a)
+findEdge a b (Graph _ es) = head $ filter (\x -> (info $ from x) == a && (info $ to x) == b) es
 
 findEdgesContaining :: (Eq a) => a -> Graph a -> [Edge a]
 findEdgesContaining v g@(Graph _ es) = filter (edgeContains v) es
