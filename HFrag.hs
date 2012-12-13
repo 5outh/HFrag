@@ -13,7 +13,7 @@ import Data.Function(on)
 import HFrag.Types
 import HFrag.Instances
 
---sample :: Graph Letter WVNode (Weighted, Visitable Node, graph of Letters)
+--sample :: Graph WVNode Letter (Weighted, Visitable Node, graph of Letters)
 --sample = Graph [A,B,C] ...
 
 sample = Graph
