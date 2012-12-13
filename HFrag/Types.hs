@@ -13,6 +13,8 @@ module HFrag.Types(
   Vertex(info)
 )where
 
+{- @todo: Change to Graph v a (Node type, Inner type) for a better looking structure -}
+
 data Graph a = Graph { vertices :: [a], edges :: [Edge a] } deriving (Show, Eq)
 
 type WeightedGraph a = Graph (WNode a)

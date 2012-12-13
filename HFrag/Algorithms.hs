@@ -5,7 +5,11 @@ module HFrag.Algorithms(
 import HFrag
 import HFrag.Instances
 import HFrag.Types
-
+-- for pathfinding
+import Data.Ord(compare)
+import Data.Function(on)
+   
+{- topological sort -}
 tsort g@(Graph vs es) = tsort' [] (noInbound g) g
   where noInbound g@(Graph vs es) = filter (null . flip inEdges g) (map info vs)
         tsort' l [] (Graph _ []) = reverse l

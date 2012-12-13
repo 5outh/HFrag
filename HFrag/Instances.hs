@@ -1,5 +1,4 @@
-module HFrag.Instances(
-)where
+module HFrag.Instances where
 
 import HFrag.Types
 

@@ -9,15 +9,21 @@ module HFrag(
   edgeContains,
   removeEdge,
   removeVertex,
-  sample
+  sample,
+  sample2
 )where
 
--- for pathfinding
-import Data.Ord(compare)
-import Data.Function(on)
 import HFrag.Types
 import HFrag.Instances
 
+{-@todo: Want to move to this! Less duplication!
+sample = Graph
+  [WVNode A False (Number 0), WVNode B False Inf,
+   WVNode C False Inf]
+  [WEdge A B 2,
+   WEdge A C 4,
+   WEdge B C 3]
+-}
 sample = Graph
   [WVNode A False (Number 0), WVNode B False Inf,
    WVNode C False Inf]
@@ -25,6 +31,10 @@ sample = Graph
    WEdge (WVNode A False (Number 0)) (WVNode C False Inf) 4,
    WEdge (WVNode B False Inf) (WVNode C False Inf) 3]
 
+sample2 = Graph 
+ [WVNode A False (Number 0), WVNode B False Inf]
+ [WEdge (head $ vertices sample2) (last $ vertices sample2) 2]
+   
 sampleEdge = WEdge (WVNode A False (Number 0)) (WVNode B False Inf) 2
 
 sampleVertex = WVNode A False (Number 0)
@@ -60,11 +70,13 @@ removeVertex v g@(Graph vs es) = Graph vs' es'
         es' = filter (`notElem` (findEdgesContaining v g)) es 
 
 -- ex : modifyVertex (fmap succ) (head $ vertices sample) sample
+-- this is broken! Modifies both of cEdges.
 modifyVertex :: (Eq a) => (a -> a) -> a -> Graph a -> Graph a
-modifyVertex f v g@(Graph vs es) = Graph vs' es'
+modifyVertex f v g@(Graph vs es) = Graph vs' es
   where vs' = f v : filter (/= v) vs
         cEdges = findEdgesContaining v g
         es' = map (fmap f) cEdges ++  filter (`notElem` cEdges) es
 		
 modifyEdgeWeight :: (Eq a) => (Unbounded Int -> Unbounded Int) -> Edge a -> Graph a -> Graph a
 modifyEdgeWeight f e@(WEdge a b w) (Graph vs es) = Graph vs (modifyWeight f e : filter (/= e) es)
+  
