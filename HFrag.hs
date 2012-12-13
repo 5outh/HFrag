@@ -19,6 +19,9 @@ sample = Graph
   [WEdge (WVNode A False (Number 0)) (WVNode B False Inf) 2,
    WEdge (WVNode A False (Number 0)) (WVNode C False Inf) 4,
    WEdge (WVNode B False Inf) (WVNode C False Inf) 3]
+
+sampleEdge = WEdge (WVNode A False (Number 0)) (WVNode B False Inf) 2
+sampleVertex = WVNode A False (Number 0)
    
 conns :: (Eq a) => (Edge a -> a) -> a -> Graph a -> [Edge a]
 conns f x (Graph _ es) = filter ((==x) . f) es
@@ -46,3 +49,6 @@ modifyVertex f v g@(Graph vs es) = Graph vs' es'
 		
 modifyEdgeWeight :: (Eq a) => (Unbounded Int -> Unbounded Int) -> Edge a -> Graph a -> Graph a
 modifyEdgeWeight f e@(WEdge a b w) (Graph vs es) = Graph vs (modifyWeight f e : filter (/= e) es)
+
+makeZipper :: (Eq a) => Graph a -> GraphZipper a
+makeZipper g@(Graph vs es) = GraphZipper (head vs) (map to $ outEdges (head vs) g) g

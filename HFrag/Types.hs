@@ -1,6 +1,7 @@
 module HFrag.Types(
   Edge(Edge, WEdge, from, to, eWeight),
   Graph(Graph, vertices, edges),
+  GraphZipper(GraphZipper, focus, connections, graph),
   Letter(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P),
   Unbounded(Number, Inf, NInf),
   VNode(VNode),
@@ -26,6 +27,8 @@ data WVNode a = WVNode a Bool (Unbounded Int) deriving (Show, Eq) --weighted, vi
 data Letter = A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P deriving (Show, Eq, Enum)
 
 data Unbounded a = Number a | Inf | NInf deriving (Show, Eq)
+
+data GraphZipper a = GraphZipper{ focus :: a, connections :: [a], graph :: Graph a } deriving Show
 			  
 class Visitable a where
   visit :: a -> a
