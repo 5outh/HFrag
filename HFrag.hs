@@ -13,9 +13,6 @@ import Data.Function(on)
 import HFrag.Types
 import HFrag.Instances
 
---sample :: Graph WVNode Letter (Weighted, Visitable Node, graph of Letters)
---sample = Graph [A,B,C] ...
-
 sample = Graph
   [WVNode A False (Number 0), WVNode B False Inf,
    WVNode C False Inf]
@@ -25,13 +22,12 @@ sample = Graph
 
 sampleEdge = WEdge (WVNode A False (Number 0)) (WVNode B False Inf) 2
 sampleVertex = WVNode A False (Number 0)
-   
-conns :: (Eq a) => (Edge a -> a) -> a -> Graph a -> [Edge a]
-conns f x (Graph _ es) = filter ((==x) . f) es
 
-outEdges x = conns from x
+outEdges :: (Vertex v, Eq a) => a -> Graph (v a) -> [Edge (v a)]
+outEdges x (Graph _ es) = filter ((==x) . info . from) es
 
-inEdges x = conns to x
+inEdges :: (Vertex v, Eq a) => a -> Graph (v a) -> [Edge (v a)]
+inEdges x (Graph _ es) = filter ((==x) . info . to) es
 
 adjacent :: (Eq a) => a -> a -> Graph a -> Bool
 adjacent a b g = not $ null $ filter (\x -> from x == a && to x == b) $ edges g
@@ -55,6 +51,3 @@ modifyVertex f v g@(Graph vs es) = Graph vs' es'
 		
 modifyEdgeWeight :: (Eq a) => (Unbounded Int -> Unbounded Int) -> Edge a -> Graph a -> Graph a
 modifyEdgeWeight f e@(WEdge a b w) (Graph vs es) = Graph vs (modifyWeight f e : filter (/= e) es)
-
-makeZipper :: (Eq a) => Graph a -> GraphZipper a
-makeZipper g@(Graph vs es) = GraphZipper (head vs) (map to $ outEdges (head vs) g) g
