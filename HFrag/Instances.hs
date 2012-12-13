@@ -45,6 +45,18 @@ instance Weighted (Edge a) where
   modifyWeight f (WEdge a b c) = WEdge a b (f c)
   getWeight      (Edge _ _) = error "Attempt to get unweighted edge"
   getWeight      (WEdge _ _ c) = c
+
+instance Vertex Node where
+  info (Node a) = a
+  
+instance Vertex VNode where
+  info (VNode a _) = a
+  
+instance Vertex WNode where
+  info (WNode a _) = a
+  
+instance Vertex WVNode where
+  info (WVNode a _ _) = a
   
 instance (Num a, Ord a) => Ord (Unbounded a) where
   compare (Number a) (Number b)

@@ -10,6 +10,7 @@ module HFrag.Types(
   Node(Node),
   Visitable(visit, unvisit, isVisited),
   Weighted(modifyWeight, getWeight),
+  Vertex(info)
 )where
 
 data Graph a = Graph { vertices :: [a], edges :: [Edge a] } deriving (Show, Eq)
@@ -29,6 +30,9 @@ data Letter = A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P deriving (Show, Eq, Enum)
 data Unbounded a = Number a | Inf | NInf deriving (Show, Eq)
 
 data GraphZipper a = GraphZipper{ focus :: a, connections :: [a], graph :: Graph a } deriving Show
+
+class Vertex n where
+  info :: n a -> a
 			  
 class Visitable a where
   visit :: a -> a
