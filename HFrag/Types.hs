@@ -1,16 +1,16 @@
 module HFrag.Types(
-  Edge(Edge, WEdge, from, to, eWeight),
-  Graph(Graph, vertices, edges),
-  GraphZipper(GraphZipper, focus, connections, graph),
-  Letter(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P),
-  Unbounded(Number, Inf, NInf),
-  VNode(VNode),
-  WNode(WNode),
-  WVNode(WVNode),
-  Node(Node),
-  Visitable(visit, unvisit, isVisited),
-  Weighted(modifyWeight, getWeight),
-  Vertex(info)
+  Edge(..),
+  Graph(..),
+  GraphZipper(..),
+  Letter(..),
+  Unbounded(..),
+  VNode(..),
+  WNode(..),
+  WVNode(..),
+  Node(..),
+  Visitable(..),
+  Weighted(..),
+  Vertex(..)
 )where
 
 {- @todo: Change to Graph v a (Node type, Inner type) for a better looking structure -}
